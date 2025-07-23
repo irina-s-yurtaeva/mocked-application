@@ -6,13 +6,13 @@ namespace MockedApplication;
 
 use MockedApplication;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
 
 class Application
 {
         protected Request $request;
-        protected Connection $connection;
+        protected EntityManager $entityManager;
 
         public function __construct(
                 string $applicationPublicId,
@@ -20,9 +20,12 @@ class Application
         )
         {
                 $this->request = Request::createFromGlobals();
-                $this->connection = DriverManager::getConnection([
+                $config = ORMSetup::createAttributeMetadataConfiguration([
+                        __DIR__ . '/Domain/Entity'
+                ], true);
+                $this->entityManager = EntityManager::create([
                         'url' => getenv('DATABASE_URL'),
-                ]);
+                ], $config);
         }
 
 	public function install(): void
@@ -55,7 +58,7 @@ class Application
                 if (isset($applicationInstallRequest))
                 {
                         (new MockedApplication\Application\UseCase\ApplicationInstall(
-                                new MockedApplication\Infrastructure\Repository\ClientSettingsRepository($this->connection)
+                                new MockedApplication\Infrastructure\Repository\ClientSettingsRepository($this->entityManager)
                         ))(
                                 $applicationInstallRequest
                         );

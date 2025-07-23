@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace MockedApplication\Infrastructure\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
+use MockedApplication\Domain\Entity\ClientSetting;
 use MockedApplication\Domain\Repository\ClientSettingsRepositoryInterface;
-use Doctrine\DBAL\Connection;
 
 class ClientSettingsRepository implements ClientSettingsRepositoryInterface
 {
-    public function __construct(private Connection $connection)
+    public function __construct(private EntityManagerInterface $em)
     {
     }
 
@@ -22,16 +23,19 @@ class ClientSettingsRepository implements ClientSettingsRepositoryInterface
         string $domain,
         string $clientEndpoint
     ): int {
-        $this->connection->insert('client_settings', [
-            'member_id' => $memberId,
-            'access_token' => $accessToken,
-            'expires_in' => $expiresIn,
-            'application_token' => $applicationToken,
-            'refresh_token' => $refreshToken,
-            'domain' => $domain,
-            'client_endpoint' => $clientEndpoint,
-        ]);
+        $entity = new ClientSetting(
+            $memberId,
+            $accessToken,
+            $expiresIn,
+            $applicationToken,
+            $refreshToken,
+            $domain,
+            $clientEndpoint
+        );
 
-        return (int)$this->connection->lastInsertId();
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        return $entity->getId() ?? 0;
     }
 }
