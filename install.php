@@ -7,11 +7,8 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 (new \MockedApplication\Application(
 	getenv('C_REST_CLIENT_ID'),
 	getenv('C_REST_CLIENT_SECRET'),
-	dbHost: getenv('DB_HOST') ?: 'localhost',
-	dbName: getenv('DB_NAME'),
-	dbUser: getenv('DB_USER'),
-	dbPassword: getenv('DB_PASS'),
-))->install('/handler.php');
+))->install();
+
 
 if($install_result['rest_only'] === false):?>
 <head>

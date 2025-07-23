@@ -18,12 +18,8 @@ class Application
         protected Connection $connection;
 
         public function __construct(
-                protected string $applicationPublicId,
-                protected string $applicationPrivateId,
-                string $dbHost,
-				string $dbName,
-				string $dbUser,
-	            string $dbPassword,
+                string $applicationPublicId,
+                string $applicationPrivateId,
         )
         {
                 $this->request = Request::createFromGlobals();
@@ -44,11 +40,8 @@ class Application
                 $this->entityManager = new EntityManager($this->connection, $config);
         }
 
-	public function install(
-		string $eventHandlerUrl,
-	): void
+	public function install(): void
 	{
-		$eventHandlerUrl = $this->request->getSchemeAndHttpHost() . $eventHandlerUrl;
 		if ($this->request->get('event') === 'ONAPPINSTALL' && !empty($this->request->get('auth')))
 		{
 			$applicationInstallRequest = new MockedApplication\Application\UseCase\Request\ApplicationInstallRequest(
@@ -59,7 +52,6 @@ class Application
 				refreshToken: $this->request->get('auth')['refresh_token'],
 				domain: $this->request->get('auth')['domain'],
 				clientEndpoint: $this->request->get('auth')['client_endpoint'],
-				handlerUrl: $eventHandlerUrl,
 			);
 		}
 		elseif ($this->request->get('PLACEMENT') === 'DEFAULT')
@@ -72,25 +64,20 @@ class Application
 				refreshToken: ($this->request->get('REFRESH_ID')),
 				domain: ($this->request->get('DOMAIN')),
 				clientEndpoint: 'https://' . $this->request->get('DOMAIN') . '/rest/',
-				handlerUrl: $eventHandlerUrl,
 			);
 		}
 
-        if (isset($applicationInstallRequest))
-        {
-            (new MockedApplication\Application\UseCase\ApplicationInstall(
-                    new MockedApplication\Infrastructure\Repository\ClientSettingsRepository(
-                            $this->entityManager,
-                            $this->connection
-                    ),
-	                new MockedApplication\Infrastructure\BitrixRestGateway(
-			                $this->request->get('auth')['domain'],
-			                $this->request->get('auth')['access_token']
-	                );
-            ))(
-                    $applicationInstallRequest
-            );
-        }
+                if (isset($applicationInstallRequest))
+                {
+                        (new MockedApplication\Application\UseCase\ApplicationInstall(
+                                new MockedApplication\Infrastructure\Repository\ClientSettingsRepository(
+                                        $this->entityManager,
+                                        $this->connection
+                                )
+                        ))(
+                                $applicationInstallRequest
+                        );
+                }
 	}
 
 	public function uninstall(): void

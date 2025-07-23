@@ -14,7 +14,6 @@ class ApplicationInstallRequest
 		public readonly string $refreshToken,
 		public readonly string $domain,
 		public readonly string $clientEndpoint,
-		public readonly string $handlerUrl,
 	)
 	{
 	}
