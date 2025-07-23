@@ -8,11 +8,14 @@ use MockedApplication;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 
 class Application
 {
         protected Request $request;
         protected EntityManager $entityManager;
+        protected Connection $connection;
 
         public function __construct(
                 string $applicationPublicId,
@@ -23,9 +26,18 @@ class Application
                 $config = ORMSetup::createAttributeMetadataConfiguration([
                         __DIR__ . '/Domain/Entity'
                 ], true);
-                $this->entityManager = EntityManager::create([
-                        'url' => getenv('DATABASE_URL'),
-                ], $config);
+
+                $connectionParams = [
+                        'driver' => 'pdo_mysql',
+                        'host' => getenv('DB_HOST') ?: 'localhost',
+                        'dbname' => getenv('DB_NAME'),
+                        'user' => getenv('DB_USER'),
+                        'password' => getenv('DB_PASS'),
+                        'charset' => 'utf8mb4',
+                ];
+
+                $this->connection = DriverManager::getConnection($connectionParams);
+                $this->entityManager = new EntityManager($this->connection, $config);
         }
 
 	public function install(): void
@@ -58,7 +70,10 @@ class Application
                 if (isset($applicationInstallRequest))
                 {
                         (new MockedApplication\Application\UseCase\ApplicationInstall(
-                                new MockedApplication\Infrastructure\Repository\ClientSettingsRepository($this->entityManager)
+                                new MockedApplication\Infrastructure\Repository\ClientSettingsRepository(
+                                        $this->entityManager,
+                                        $this->connection
+                                )
                         ))(
                                 $applicationInstallRequest
                         );
