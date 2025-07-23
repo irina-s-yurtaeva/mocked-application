@@ -6,6 +6,7 @@ namespace MockedApplication\Application\UseCase;
 
 use MockedApplication\Application\UseCase\Request\ApplicationInstallRequest;
 use MockedApplication\Application\UseCase\Response\ApplicationInstallResponse;
+use MockedApplication\Application\BitrixRestGateway;
 use MockedApplication\Domain\Repository\ClientSettingsRepositoryInterface;
 use src\Internal\CRestExt;
 
@@ -13,6 +14,7 @@ class ApplicationInstall
 {
     public function __construct(
         protected ClientSettingsRepositoryInterface $clientSettingsRepository,
+	    protected BitrixRestGateway $gateway,
     ) {
     }
 
@@ -28,29 +30,23 @@ class ApplicationInstall
             $request->clientEndpoint
         );
 
-        $handlerBackUrl = ($_SERVER['HTTPS'] === 'on' || $_SERVER['SERVER_PORT'] === '443' ? 'https' : 'http') . '://'
-            . $_SERVER['SERVER_NAME']
-            . (in_array($_SERVER['SERVER_PORT'], ['80', '443'], true) ? '' : ':' . $_SERVER['SERVER_PORT'])
-            . str_replace($_SERVER['DOCUMENT_ROOT'], '', __DIR__)
-            . '/handler.php';
+		$this->gateway->call(
+			'event.bind',
+			[
+				'EVENT' => 'ONCRMCONTACTUPDATE',
+				'HANDLER' => $request->handlerUrl,
+				'EVENT_TYPE' => 'online'
+			]
+		);
 
-        CRestExt::call(
-            'event.bind',
-            [
-                'EVENT' => 'ONCRMCONTACTUPDATE',
-                'HANDLER' => $handlerBackUrl,
-                'EVENT_TYPE' => 'online'
-            ]
-        );
-
-        CRestExt::call(
-            'event.bind',
-            [
-                'EVENT' => 'ONCRMCONTACTADD',
-                'HANDLER' => $handlerBackUrl,
-                'EVENT_TYPE' => 'online'
-            ]
-        );
+	    $this->gateway->call(
+		    'event.bind',
+		    [
+			    'EVENT' => 'ONCRMCONTACTADD',
+			    'HANDLER' => $request->handlerUrl,
+			    'EVENT_TYPE' => 'online'
+		    ]
+	    );
 
         return new ApplicationInstallResponse($id);
     }
