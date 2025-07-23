@@ -83,10 +83,14 @@ class Application
                             $this->entityManager,
                             $this->connection
                     ),
-	                new MockedApplication\Infrastructure\BitrixRestGateway(
-			                $this->request->get('auth')['domain'],
-			                $this->request->get('auth')['access_token']
-	                );
+                        new MockedApplication\Infrastructure\Gateway\BitrixRestGateway(
+                            tenantId: $this->request->get('auth')['domain'],
+                            clientEndpoint: $this->request->get('auth')['client_endpoint'],
+                            accessTokenProvider: new MockedApplication\Infrastructure\Provider\DbAccessTokenProvider(
+                                $this->connection
+                            )
+                        )
+            );
             ))(
                     $applicationInstallRequest
             );
