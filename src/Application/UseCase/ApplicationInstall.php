@@ -6,7 +6,7 @@ namespace MockedApplication\Application\UseCase;
 
 use MockedApplication\Application\UseCase\Request\ApplicationInstallRequest;
 use MockedApplication\Application\UseCase\Response\ApplicationInstallResponse;
-use MockedApplication\Application\BitrixRestGateway;
+use MockedApplication\Application\Gateway\BitrixRestGateway;
 use MockedApplication\Domain\Repository\ClientSettingsRepositoryInterface;
 use src\Internal\CRestExt;
 
