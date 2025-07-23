@@ -13,6 +13,8 @@ interface ClientSettingsRepositoryInterface
         string $applicationToken,
         string $refreshToken,
         string $domain,
-        string $clientEndpoint
+        string $clientEndpoint,
+        int $userId = 0,
+        array $addParameters = []
     ): int;
 }
