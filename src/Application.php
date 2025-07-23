@@ -6,18 +6,24 @@ namespace MockedApplication;
 
 use MockedApplication;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 
 class Application
 {
-	protected Request $request;
+        protected Request $request;
+        protected Connection $connection;
 
-	public function __construct(
-		string $applicationPublicId,
-		string $applicationPrivateId,
-	)
-	{
-		$this->request = Request::createFromGlobals();
-	}
+        public function __construct(
+                string $applicationPublicId,
+                string $applicationPrivateId,
+        )
+        {
+                $this->request = Request::createFromGlobals();
+                $this->connection = DriverManager::getConnection([
+                        'url' => getenv('DATABASE_URL'),
+                ]);
+        }
 
 	public function install(): void
 	{
@@ -46,18 +52,14 @@ class Application
 			);
 		}
 
-		if (isset($applicationInstallRequest))
-		{
-			(
-				new MockedApplication\Application\UseCase\ApplicationInstall(
-					new MockedApplication\Infrastructure\Repository\ClientSettingsRepository()
-				)
-			)
-				(
-					$applicationInstallRequest
-				)
-			;
-		}
+                if (isset($applicationInstallRequest))
+                {
+                        (new MockedApplication\Application\UseCase\ApplicationInstall(
+                                new MockedApplication\Infrastructure\Repository\ClientSettingsRepository($this->connection)
+                        ))(
+                                $applicationInstallRequest
+                        );
+                }
 	}
 
 	public function uninstall(): void

@@ -6,5 +6,13 @@ namespace MockedApplication\Domain\Repository;
 
 interface ClientSettingsRepositoryInterface
 {
-	public function saveClientSettings();
+    public function saveClientSettings(
+        string $memberId,
+        string $accessToken,
+        string $expiresIn,
+        string $applicationToken,
+        string $refreshToken,
+        string $domain,
+        string $clientEndpoint
+    ): int;
 }
