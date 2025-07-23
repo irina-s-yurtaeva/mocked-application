@@ -6,4 +6,5 @@ namespace MockedApplication\Infrastructure\Exception;
 
 final class InvalidTokenException extends BitrixApiException
 {
+	protected $message = 'invalid token, need reinstall application';
 }

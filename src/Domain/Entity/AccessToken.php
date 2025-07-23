@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Domain\Entity;
+namespace src\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'mocked_app_client_settings')]
-class ClientSetting
+#[ORM\Table(name: 'mocked_app_access_token')]
+class AccessToken
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -31,27 +31,21 @@ class ClientSetting
     private string $refreshToken;
 
     #[ORM\Column]
-    private string $domain;
-
-    #[ORM\Column]
     private string $clientEndpoint;
 
     public function __construct(
-        string $memberId,
+		int $id,
+		int $clientId,
         string $accessToken,
-        string $expiresIn,
-        string $applicationToken,
-        string $refreshToken,
-        string $domain,
-        string $clientEndpoint
+		string $expiresIn,
+		string $applicationToken,
+		string $refreshToken,
+		int $userId,
     ) {
-        $this->memberId = $memberId;
         $this->accessToken = $accessToken;
         $this->expiresIn = $expiresIn;
         $this->applicationToken = $applicationToken;
         $this->refreshToken = $refreshToken;
-        $this->domain = $domain;
-        $this->clientEndpoint = $clientEndpoint;
     }
 
     public function getId(): ?int

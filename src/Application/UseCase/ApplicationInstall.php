@@ -7,28 +7,33 @@ namespace MockedApplication\Application\UseCase;
 use MockedApplication\Application\UseCase\Request\ApplicationInstallRequest;
 use MockedApplication\Application\UseCase\Response\ApplicationInstallResponse;
 use MockedApplication\Application\Gateway\BitrixRestGateway;
-use MockedApplication\Domain\Repository\ClientSettingsRepositoryInterface;
-use src\Internal\CRestExt;
+use MockedApplication\Domain\Repository\ClientRepositoryInterface;
 
 class ApplicationInstall
 {
     public function __construct(
-        protected ClientSettingsRepositoryInterface $clientSettingsRepository,
+        protected ClientRepositoryInterface $clientRepository,
 	    protected BitrixRestGateway $gateway,
     ) {
     }
 
     public function __invoke(ApplicationInstallRequest $request): ApplicationInstallResponse
     {
-        $id = $this->clientSettingsRepository->saveClientSettings(
+        $clientId = $this->clientRepository->saveClient(
             $request->memberId,
-            $request->accessToken,
-            $request->expiresIn,
-            $request->applicationToken,
-            $request->refreshToken,
             $request->domain,
-            $request->clientEndpoint
         );
+
+		$this->clientRepository->saveAccessToken(
+			$clientId,
+			$this->gateway->getAccessToken(,
+				$request->memberId,
+				$request->domain,
+				$request->clientEndpoint
+			)
+		);
+
+
 
 		$this->gateway->call(
 			'event.bind',
