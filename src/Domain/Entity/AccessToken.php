@@ -16,7 +16,7 @@ class AccessToken
     private ?int $id = null;
 
     #[ORM\Column]
-    private string $memberId;
+    private int $clientId;
 
     #[ORM\Column]
     private string $accessToken;
@@ -30,27 +30,41 @@ class AccessToken
     #[ORM\Column]
     private string $refreshToken;
 
-    #[ORM\Column]
-    private string $clientEndpoint;
+	#[ORM\Column]
+	private ?int $userId;
 
-    public function __construct(
-		int $id,
+	#[ORM\Column]
+	private ?string $userFullName;
+
+
+	/**
+	 * AccessToken constructor.
+	 */
+
+	public function __construct(
+		?int   $id,
 		int $clientId,
-        string $accessToken,
+		string $accessToken,
 		string $expiresIn,
 		string $applicationToken,
 		string $refreshToken,
-		int $userId,
-    ) {
-        $this->accessToken = $accessToken;
-        $this->expiresIn = $expiresIn;
-        $this->applicationToken = $applicationToken;
-        $this->refreshToken = $refreshToken;
-    }
+		?int $userId,
+		?int $userFullName
+	)
+	{
+		$this->id = $id;
+		$this->clientId = $clientId;
+		$this->accessToken = $accessToken;
+		$this->expiresIn = $expiresIn;
+		$this->applicationToken = $applicationToken;
+		$this->refreshToken = $refreshToken;
+		$this->userId = $userId;
+		$this->userFullName = $userFullName;
+	}
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+	public function getId(): ?int
+	{
+		return $this->id;
+	}
 }
 

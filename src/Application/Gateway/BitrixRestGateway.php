@@ -8,5 +8,5 @@ interface BitrixRestGateway
 {
     public function call(string $method, array $params = []): array;
 
-	public function getAccessTocken(string $method, array $params = []): array;
+	public function getAccessToken(string $method, array $params = []): array;
 }

@@ -14,6 +14,9 @@ final class ApplicationAccessTokenProvider implements Application\Gateway\Access
 		protected string $expiresIn,
 		protected string $applicationToken,
 		protected string $refreshToken,
+	    protected ?int $userId = null,
+	    protected ?int $userFullName = null,
+
     )
     {
 
@@ -42,5 +45,15 @@ final class ApplicationAccessTokenProvider implements Application\Gateway\Access
 	public function refreshAccessToken(array $data): void
 	{
 
+	}
+
+	public function getUserId(array $data): ?int
+	{
+		return $this->userId;
+	}
+
+	public function getUserFullNAme(array $data): ?string
+	{
+		return $this->userFullName;
 	}
 }

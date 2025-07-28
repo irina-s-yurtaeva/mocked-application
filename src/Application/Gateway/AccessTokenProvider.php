@@ -14,5 +14,10 @@ interface AccessTokenProvider
 
 	public function getApplicationToken(): string;
 
+	public function getUserId(array $data): ?int;
+
+	public function getUserFullNAme(array $data): ?string;
+
 	public function refreshAccessToken(array $data): void;
+
 }

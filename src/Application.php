@@ -33,8 +33,12 @@ class Application
 		], true);
 
 		$connectionParams = [
-			'driver'   => 'pdo_mysql', 'host' => $dbHost, 'dbname' => $dbName, 'user' => $dbUser,
-			'password' => $dbPassword, 'charset' => 'utf8mb4',
+			'driver' => 'pdo_mysql',
+			'host' => $dbHost,
+			'dbname' => $dbName,
+			'user' => $dbUser,
+			'password' => $dbPassword,
+			'charset' => 'utf8mb4',
 		];
 
 		$this->connection = DriverManager::getConnection($connectionParams);
@@ -59,7 +63,6 @@ class Application
 			$urlProvider = new MockedApplication\Infrastructure\Provider\ApplicationUrlProvider(
 				$this->oauthServerUrl,
 				$this->request->get('auth')['client_endpoint'],
-				$this->request->get('auth')['domain'],
 			);
 
 			$accessTokenProvider = new MockedApplication\Infrastructure\Provider\ApplicationAccessTokenProvider(
@@ -80,8 +83,7 @@ class Application
 
 			$urlProvider = new MockedApplication\Infrastructure\Provider\ApplicationUrlProvider(
 				$this->oauthServerUrl,
-				$this->request->get('auth')['client_endpoint'],
-				$this->request->get('auth')['domain'],
+				'https://' . $this->request->get('DOMAIN') . '/rest/',
 			);
 
 			$accessTokenProvider = new MockedApplication\Infrastructure\Provider\ApplicationAccessTokenProvider(
@@ -94,24 +96,20 @@ class Application
 		else
 		{
 			throw new MockedApplication\Infrastructure\Exception\BitrixApiException(
-
+				'Invalid request parameters for application installation.',
 			);
 		}
 
-
-		if (isset($applicationInstallRequest))
-		{
-			(new MockedApplication\Application\UseCase\ApplicationInstall(
-				new MockedApplication\Infrastructure\Repository\ClientSettingsRepository(
-					$this->entityManager,
-					$this->connection
-				),
-				$this->combineBitrixGateway(
-					$urlProvider,
-					$accessTokenProvider,
-				),
-			))($applicationInstallRequest);
-		}
+		(new MockedApplication\Application\UseCase\ApplicationInstall(
+			new MockedApplication\Infrastructure\Repository\ClientRepository(
+				$this->entityManager,
+				$this->connection
+			),
+			$this->combineBitrixGateway(
+				$urlProvider,
+				$accessTokenProvider,
+			),
+		))($applicationInstallRequest);
 	}
 
 	public function uninstall(): void

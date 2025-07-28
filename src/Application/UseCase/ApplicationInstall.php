@@ -22,14 +22,19 @@ class ApplicationInstall
         $clientId = $this->clientRepository->saveClient(
             $request->memberId,
             $request->domain,
+            $request->clientEndpoint
         );
 
 		$this->clientRepository->saveAccessToken(
 			$clientId,
-			$this->gateway->getAccessToken(,
+			$this->gateway->getAccessToken(
 				$request->memberId,
 				$request->domain,
-				$request->clientEndpoint
+				$request->clientEndpoint,
+				$request->accessToken,
+				$request->expiresIn,
+				$request->applicationToken,
+				$request->refreshToken
 			)
 		);
 
