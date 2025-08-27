@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Infrastructure\Provider;
+namespace App\Infrastructure\Provider;
 
 use Doctrine\DBAL\Connection;
-use MockedApplication\Application;
+use App\Application;
 
 final class ApplicationAccessTokenProvider implements Application\Gateway\AccessTokenProvider
 {

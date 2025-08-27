@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Application\UseCase\Response;
+namespace App\Application\UseCase\Response;
 
 class ApplicationInstallResponse
 {

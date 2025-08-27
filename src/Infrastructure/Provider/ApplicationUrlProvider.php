@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Infrastructure\Provider;
+namespace App\Infrastructure\Provider;
 
-use MockedApplication\Application\Gateway\BitrixUrlProvider;
+use App\Application\Gateway\BitrixUrlProvider;
 
 class ApplicationUrlProvider extends BitrixUrlProvider
 {

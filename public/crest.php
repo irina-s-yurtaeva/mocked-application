@@ -1,6 +1,7 @@
 <?php
 
-namespace src\Domain;
+
+namespace public;
 
 use Internal\Exception;
 use const Internal\C_REST_BLOCK_LOG;
@@ -85,7 +86,7 @@ class CRest
 					curl_setopt($obCurl, CURLOPT_POSTFIELDS, $sPostFields);
 				}
 				curl_setopt($obCurl, CURLOPT_FOLLOWLOCATION, (isset($arParams['followlocation'])) ? $arParams['followlocation'] : 1);
-				if (defined("C_REST_IGNORE_SSL") && C_REST_IGNORE_SSL === true)
+				if (defined("C_REST_IGNORE_SSL") && \src\Domain\C_REST_IGNORE_SSL === true)
 				{
 					curl_setopt($obCurl, CURLOPT_SSL_VERIFYPEER, false);
 					curl_setopt($obCurl, CURLOPT_SSL_VERIFYHOST, false);
@@ -115,14 +116,7 @@ class CRest
 					else
 					{
 						$arErrorInform = [
-							'expired_token'          => 'expired token, cant get new auth? Check access oauth server.',
-							'invalid_token'          => 'invalid token, need reinstall application',
-							'invalid_grant'          => 'invalid grant, check out define C_REST_CLIENT_SECRET or C_REST_CLIENT_ID',
-							'invalid_client'         => 'invalid client, check out define C_REST_CLIENT_SECRET or C_REST_CLIENT_ID',
-							'QUERY_LIMIT_EXCEEDED'   => 'Too many requests, maximum 2 query by second',
-							'ERROR_METHOD_NOT_FOUND' => 'Method not found! You can see the permissions of the application: CRest::call(\'scope\')',
-							'NO_AUTH_FOUND'          => 'Some setup error b24, check in table "b_module_to_module" event "OnRestCheckAuth"',
-							'INTERNAL_SERVER_ERROR'  => 'Server down, try later'
+							'expired_token' => 'expired token, cant get new auth? Check access oauth server.', 'invalid_token' => 'invalid token, need reinstall application', 'invalid_grant' => 'invalid grant, check out define C_REST_CLIENT_SECRET or C_REST_CLIENT_ID', 'invalid_client' => 'invalid client, check out define C_REST_CLIENT_SECRET or C_REST_CLIENT_ID', 'QUERY_LIMIT_EXCEEDED' => 'Too many requests, maximum 2 query by second', 'ERROR_METHOD_NOT_FOUND' => 'Method not found! You can see the permissions of the application: CRest::call(\'scope\')', 'NO_AUTH_FOUND' => 'Some setup error b24, check in table "b_module_to_module" event "OnRestCheckAuth"', 'INTERNAL_SERVER_ERROR' => 'Server down, try later'
 						];
 						if (!empty($arErrorInform[$result['error']]))
 						{
@@ -144,13 +138,11 @@ class CRest
 			} catch (Exception $e)
 			{
 				static::setLog([
-					'message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTrace(),
-					'params'  => $arParams
+					'message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTrace(), 'params' => $arParams
 				], 'exceptionCurl');
 
 				return [
-					'error'             => 'exception', 'error_exception_code' => $e->getCode(),
-					'error_information' => $e->getMessage(),
+					'error' => 'exception', 'error_exception_code' => $e->getCode(), 'error_information' => $e->getMessage(),
 				];
 			}
 		}
@@ -265,9 +257,7 @@ class CRest
 		{
 			$arParamsAuth = [
 				'this_auth' => 'Y', 'params' => [
-					'client_id'     => $arSettings['C_REST_CLIENT_ID'], 'grant_type' => 'refresh_token',
-					'client_secret' => $arSettings['C_REST_CLIENT_SECRET'],
-					'refresh_token' => $arSettings["refresh_token"],
+					'client_id' => $arSettings['C_REST_CLIENT_ID'], 'grant_type' => 'refresh_token', 'client_secret' => $arSettings['C_REST_CLIENT_SECRET'], 'refresh_token' => $arSettings["refresh_token"],
 				]
 			];
 			$newData = static::callCurl($arParamsAuth);
@@ -350,13 +340,13 @@ class CRest
 		if (file_exists(__DIR__ . '/settings.json'))
 		{
 			$return = static::expandData(file_get_contents(__DIR__ . '/settings.json'));
-			if (defined("C_REST_CLIENT_ID") && !empty(C_REST_CLIENT_ID))
+			if (defined("C_REST_CLIENT_ID") && !empty(\src\Domain\C_REST_CLIENT_ID))
 			{
-				$return['C_REST_CLIENT_ID'] = C_REST_CLIENT_ID;
+				$return['C_REST_CLIENT_ID'] = \src\Domain\C_REST_CLIENT_ID;
 			}
-			if (defined("C_REST_CLIENT_SECRET") && !empty(C_REST_CLIENT_SECRET))
+			if (defined("C_REST_CLIENT_SECRET") && !empty(\src\Domain\C_REST_CLIENT_SECRET))
 			{
-				$return['C_REST_CLIENT_SECRET'] = C_REST_CLIENT_SECRET;
+				$return['C_REST_CLIENT_SECRET'] = \src\Domain\C_REST_CLIENT_SECRET;
 			}
 		}
 		return $return;
@@ -454,7 +444,7 @@ class CRest
 		{
 			if (defined("C_REST_LOGS_DIR"))
 			{
-				$path = C_REST_LOGS_DIR;
+				$path = \src\Domain\C_REST_LOGS_DIR;
 			}
 			else
 			{
@@ -468,7 +458,7 @@ class CRest
 			}
 
 			$path .= time() . '_' . $type . '_' . rand(1, 9999999) . 'log';
-			if (!defined("C_REST_LOG_TYPE_DUMP") || C_REST_LOG_TYPE_DUMP !== true)
+			if (!defined("C_REST_LOG_TYPE_DUMP") || \src\Domain\C_REST_LOG_TYPE_DUMP !== true)
 			{
 				$jsonLog = static::wrapData($arData);
 				if ($jsonLog === false)

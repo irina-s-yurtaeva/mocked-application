@@ -1,8 +1,6 @@
 <?php
 
-require dirname(__DIR__) . '/vendor/autoload.php';
-
-(Dotenv\Dotenv::createImmutable(__DIR__))->load();
+require dirname(__DIR__) . '/index.php';
 
 (new \MockedApplication\Application(
 	getenv('C_REST_CLIENT_ID'),

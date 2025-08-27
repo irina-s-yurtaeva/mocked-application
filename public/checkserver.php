@@ -1,6 +1,6 @@
 <?php
 
-use src\Domain\CRest;
+use public\CRest;
 
 require_once (__DIR__.'/crest.php');
 

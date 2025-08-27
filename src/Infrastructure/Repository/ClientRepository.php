@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Infrastructure\Repository;
+namespace App\Infrastructure\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
-use MockedApplication\Domain\Entity\Client;
-use MockedApplication\Domain\Repository\ClientRepositoryInterface;
+use App\Domain\Entity\Client;
+use App\Domain\Entity\AccessToken;
+use App\Domain\Repository\ClientRepositoryInterface;
 
 class ClientRepository implements ClientRepositoryInterface
 {
@@ -17,28 +18,49 @@ class ClientRepository implements ClientRepositoryInterface
     ) {
     }
 
-    public function saveClient(
-        string $memberId,
-        string $accessToken,
-        string $expiresIn,
-        string $applicationToken,
-        string $refreshToken,
-        string $domain,
-        string $clientEndpoint
-    ): int {
-        $entity = new Client(
-            $memberId,
-            $accessToken,
-            $expiresIn,
-            $applicationToken,
-            $refreshToken,
-            $domain,
-            $clientEndpoint
-        );
+	public function saveClient(
+		?int $id,
+		string $memberId,
+		string $domain,
+		string $clientEndPoint,
+	): int
+	{
+		$entity = new Client(
+			0,
+			$memberId,
+			$domain,
+			$clientEndPoint
+		);
 
-        $this->em->persist($entity);
-        $this->em->flush();
+		if ($id) {
+			$entity->setId($id);
+		}
 
-        return $entity->getId() ?? 0;
-    }
+		$this->em->persist($entity);
+		$this->em->flush();
+
+		return $entity->getId() ?? 0;
+	}
+
+	public function saveAccessToken(
+		int $clintId,
+		AccessToken $accessToken
+	): int
+	{
+		$entity = $this->em->getRepository(Client::class)->find($clintId);
+
+		if (!$entity) {
+			throw new \InvalidArgumentException('Client not found');
+		}
+
+		$entity->setAccessToken($accessToken->getAccessToken());
+		$entity->setExpiresIn($accessToken->getExpiresIn());
+		$entity->setApplicationToken($accessToken->getApplicationToken());
+		$entity->setRefreshToken($accessToken->getRefreshToken());
+
+		$this->em->persist($entity);
+		$this->em->flush();
+
+		return $clintId;
+	}
 }

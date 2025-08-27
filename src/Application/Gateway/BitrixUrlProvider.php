@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Application\Gateway;
+namespace App\Application\Gateway;
 
 abstract class BitrixUrlProvider
 {

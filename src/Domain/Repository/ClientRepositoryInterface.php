@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Domain\Repository;
+namespace App\Domain\Repository;
 
-use src\Domain\Entity\AccessToken;
+use App\Domain\Entity\AccessToken;
 
 interface ClientRepositoryInterface
 {

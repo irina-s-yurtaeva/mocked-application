@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Infrastructure\Exception;
+namespace App\Infrastructure\Exception;
 
 final class MethodNotFoundException extends BitrixApiException
 {

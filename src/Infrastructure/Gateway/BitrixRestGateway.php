@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Infrastructure\Gateway;
+namespace App\Infrastructure\Gateway;
 
-use MockedApplication\Application;
-use MockedApplication\Infrastructure\Exception\BitrixApiException;
-use MockedApplication\Infrastructure\Exception\CurlTransportException;
-use MockedApplication\Infrastructure\Exception\ExpiredTokenException;
-use MockedApplication\Infrastructure\Exception\InternalServerErrorException;
-use MockedApplication\Infrastructure\Exception\InvalidClientException;
-use MockedApplication\Infrastructure\Exception\InvalidGrantException;
-use MockedApplication\Infrastructure\Exception\InvalidTokenException;
-use MockedApplication\Infrastructure\Exception\MethodNotFoundException;
-use MockedApplication\Infrastructure\Exception\NoAuthFoundException;
-use MockedApplication\Infrastructure\Exception\QueryLimitExceededException;
-use MockedApplication\Application\Gateway\AccessTokenProvider;
-use MockedApplication\Application\Gateway\BitrixUrlProvider;
+use App\Application;
+use App\Infrastructure\Exception\BitrixApiException;
+use App\Infrastructure\Exception\CurlTransportException;
+use App\Infrastructure\Exception\ExpiredTokenException;
+use App\Infrastructure\Exception\InternalServerErrorException;
+use App\Infrastructure\Exception\InvalidClientException;
+use App\Infrastructure\Exception\InvalidGrantException;
+use App\Infrastructure\Exception\InvalidTokenException;
+use App\Infrastructure\Exception\MethodNotFoundException;
+use App\Infrastructure\Exception\NoAuthFoundException;
+use App\Infrastructure\Exception\QueryLimitExceededException;
+use App\Application\Gateway\AccessTokenProvider;
+use App\Application\Gateway\BitrixUrlProvider;
 
 final class BitrixRestGateway implements Application\Gateway\BitrixRestGateway
 {
@@ -78,6 +78,11 @@ final class BitrixRestGateway implements Application\Gateway\BitrixRestGateway
 
         return $data;
     }
+
+	public function getAccessToken(string $method, array $params = []): array
+	{
+		return [];
+	}
 
 	private function justCurl(string $url, array $params): array
 	{

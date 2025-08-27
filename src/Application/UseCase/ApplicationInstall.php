@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Application\UseCase;
+namespace App\Application\UseCase;
 
-use MockedApplication\Application\UseCase\Request\ApplicationInstallRequest;
-use MockedApplication\Application\UseCase\Response\ApplicationInstallResponse;
-use MockedApplication\Application\Gateway\BitrixRestGateway;
-use MockedApplication\Domain\Repository\ClientRepositoryInterface;
+use App\Application\UseCase\Request\ApplicationInstallRequest;
+use App\Application\UseCase\Response\ApplicationInstallResponse;
+use App\Application\Gateway\BitrixRestGateway;
+use App\Domain\Repository\ClientRepositoryInterface;
 
 class ApplicationInstall
 {

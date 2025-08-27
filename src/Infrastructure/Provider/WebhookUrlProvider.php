@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace src\Infrastructure\Provider;
 
-use MockedApplication\Application\Gateway\BitrixUrlProvider;
+use App\Application\Gateway\BitrixUrlProvider;
 
 class WebhookUrlProvider extends BitrixUrlProvider
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Application\UseCase\Request;
+namespace App\Application\UseCase\Request;
 
 class ApplicationInstallRequest
 {
