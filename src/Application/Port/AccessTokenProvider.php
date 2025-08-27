@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Application\Port;
+namespace App\Application\Port;
 
 interface AccessTokenProvider
 {

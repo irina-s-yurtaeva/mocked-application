@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MockedApplication\Infrastructure\Provider;
+namespace App\Infrastructure\Provider;
 
 use Doctrine\DBAL\Connection;
-use MockedApplication\Application\Port\AccessTokenProvider;
+use App\Application\Port\AccessTokenProvider;
 
 final class DbAccessTokenProvider implements AccessTokenProvider
 {

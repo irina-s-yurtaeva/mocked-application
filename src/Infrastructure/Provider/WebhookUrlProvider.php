@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace src\Infrastructure\Provider;
+namespace App\Infrastructure\Provider;
 
 use App\Application\Gateway\BitrixUrlProvider;
 

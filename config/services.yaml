@@ -23,5 +23,8 @@ services:
     App\Infrastructure\Presentation\TemplateRenderer:
         arguments:
             $templateDir: '%app.templates_dir%'
+
+    App\Domain\Repository\PortalRepositoryInterface:
+        alias: App\Infrastructure\Repository\PortalRepository
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

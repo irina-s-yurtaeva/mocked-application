@@ -9,7 +9,7 @@ use App\Domain\Repository\PortalRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class PortalRepository implements PortalRepositoryInterface
+class PortalRepository extends ServiceEntityRepository implements PortalRepositoryInterface
 {
 	public function __construct(ManagerRegistry $registry)
 	{
