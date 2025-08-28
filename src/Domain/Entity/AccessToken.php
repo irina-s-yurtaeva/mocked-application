@@ -4,57 +4,53 @@ declare(strict_types=1);
 
 namespace App\Domain\Entity;
 
-use Doctrine\ORM;
+use Doctrine\ORM\Mapping as ORM;
+use App\Domain\Entity\Client;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'mocked_app_access_token')]
+#[ORM\Table(name: 'app_client_access_token')]
 class AccessToken
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private int $id;
+	#[ORM\Id]
+	#[ORM\GeneratedValue]
+	#[ORM\Column(type: 'integer')]
+	private int $id;
 
 	#[ORM\Column(type: 'integer')]
-    private int $clientId;
+	private int $clientId;
 
 	#[ORM\Column(type: 'string', length: 255)]
-    private string $accessToken;
+	private string $accessToken;
 
 	#[ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
 	private \DateTimeImmutable $expiresIn;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private string $applicationToken;
+	private ?string $applicationToken = null;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private string $refreshToken;
+	private ?string $refreshToken = null;
 
 	#[ORM\Column(type: 'integer', nullable: true)]
-	private ?int $userId;
+	private ?int $userId = null;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
-	private ?string $userFullName;
+	private ?string $userFullName = null;
 
-	#[ORM\ManyToOne(targetEntity: Client::class, fetch: 'LAZY')]
+	#[ORM\ManyToOne(targetEntity: Client::class, fetch: 'LAZY', inversedBy: 'accessTokens')]
 	#[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id', nullable: false)]
 	private ?Client $client = null;
-
-	/**
-	 * AccessToken constructor.
-	 */
 
 	public function __construct(
 		int $id,
 		int $clientId,
 		string $accessToken,
 		\DateTimeImmutable $expiresIn,
-		string $applicationToken,
-		string $refreshToken,
+		?string $applicationToken,
+		?string $refreshToken,
 		?int $userId,
-		?int $userFullName
-	)
-	{
+		?string $userFullName
+	) {
 		$this->id = $id;
 		$this->clientId = $clientId;
 		$this->accessToken = $accessToken;
@@ -70,4 +66,3 @@ class AccessToken
 		return $this->id;
 	}
 }
-

@@ -19,4 +19,6 @@ interface ClientRepositoryInterface
 		int $clintId,
 		AccessToken $accessToken
 	): int;
+
+	public function findAll(): array;
 }

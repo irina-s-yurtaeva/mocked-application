@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'mocked_app_client')]
-#[ORM\UniqueConstraint(name: 'udx_sportsman_user_id', columns: ['user_id'])]
-#[ORM\Index(name: 'idx_sportsman_category_code', columns: ['category_code'])]
-#[ORM\Index(name: 'idx_sportsman_rank_code', columns: ['rank_code'])]
-#[ORM\Index(name: 'idx_sportsman_school_id', columns: ['school_id'])]
-
+#[ORM\Table(name: 'app_client')]
 class Client
 {
     #[ORM\Id]
@@ -20,18 +17,18 @@ class Client
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique: true, nullable: false)]
     private string $memberId;
 
-	#[ORM\Column(type: 'string', length: 255)]
+	#[ORM\Column(type: 'string', length: 255, nullable: false)]
     private string $domain;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
     private string $clientEndpoint;
 
-	#[ORM\OneToMany(targetEntity: AccessToken::class, fetch: 'LAZY')]
 	#[ORM\JoinColumn(name: 'id', referencedColumnName: 'client_id', nullable: true)]
-	private ?AccessToken $accessToken = null;
+	#[ORM\OneToMany(mappedBy: 'client', targetEntity: AccessToken::class, fetch: 'LAZY')]
+	private Collection $accessTokens;
 
 	public function __construct(
 		?int $id = null,
@@ -49,5 +46,14 @@ class Client
     {
         return $this->id;
     }
-}
 
+	public function getName(): string
+	{
+		return $this->domain;
+	}
+
+	public function getUrl(): string
+	{
+		return $this->clientEndpoint;
+	}
+}
