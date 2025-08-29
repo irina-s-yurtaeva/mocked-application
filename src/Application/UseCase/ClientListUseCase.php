@@ -10,7 +10,7 @@ class ClientListUseCase
 {
 	public function __construct(private ClientRepositoryInterface $repository) {}
 
-	public function execute(): array
+	public function __invoke(): array
 	{
 		return $this->repository->findAll();
 	}

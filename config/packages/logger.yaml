@@ -1,0 +1,7 @@
+monolog:
+  handlers:
+    main:
+      type: stream
+      path: /home/airr/localhost/mocked_app.log
+      level: debug
+      channels: ["!event"]

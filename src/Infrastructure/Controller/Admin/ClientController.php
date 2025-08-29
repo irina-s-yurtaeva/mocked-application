@@ -21,7 +21,7 @@ class ClientController extends AbstractController
 		TemplateRenderer $renderer
 	): Response
 	{
-		$portals = $useCase->execute();
+		$portals = $useCase();
 		$content = $renderer->render('client/list.php', ['portals' => $portals]);
 
 		return new Response($content, 200, ['Content-Type' => 'text/html']);
