@@ -6,36 +6,58 @@ namespace App\Infrastructure\Controller\Api\ClientInstall\v1;
 
 use App\Application\UseCase\ClientInstall;
 use App\Application\UseCase\Request\ClientInstallRequest;
+use App\Infrastructure\Presentation\TemplateRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 #[AsController]
 class Controller extends AbstractController
 {
 	public function __construct(
-		private readonly LoggerInterface $logger
+		private Manager $manager,
+		private readonly LoggerInterface $logger,
+		private TemplateRenderer $renderer
 	) {
 	}
 
 	#[Route('/v1/install/', 'client_install', methods: ['POST'])]
-	public function install(
-		ClientInstall $useCase,
-		ClientInstallRequest $request,
-	): JsonResponse
+	public function install(Request $request): Response
 	{
-		$this->logger->debug('Привет! Это лог из контроллера установки клиента.');
-		$answer = $useCase($request);
+		try
+		{
+			$this->logger->info('Install request', ['request' => $request->request->all()]);
+			$this->manager->install($request);
 
-		return new JsonResponse($answer);
+			if ($this->manager->isHTMLAnswer())
+			{
+				$content = $this->renderer->render('client/install_succeeded.php', []);
+
+				return new Response($content, 200, ['Content-Type' => 'text/html']);
+			}
+
+			return new JsonResponse(['status' => 'ok']);
+		}
+		catch (\Exception $exception)
+		{
+			if ($this->manager->isHTMLAnswer())
+			{
+				$content = $this->renderer->render('client/install_failed.php', []);
+
+				return new Response($content, 200, ['Content-Type' => 'text/html']);
+			}
+
+			return new JsonResponse(['status' => 'error', 'message' => $exception->getMessage()], 400);
+		}
 	}
 
-	#[Route('/v1/install/', 'client_install_test', methods: ['GET'])]
+	#[Route('/v1/install/test/', 'client_install_test', methods: ['GET'])]
 	public function installTest(): JsonResponse
 	{
-		$this->logger->debug('Привет! Это test лог из контроллера установки клиента.');
 		return new JsonResponse(['status' => 'ok']);
 	}
 }

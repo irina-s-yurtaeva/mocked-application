@@ -6,7 +6,8 @@ namespace App\Application\UseCase;
 
 use App\Application\UseCase\Request\ClientInstallRequest;
 use App\Application\UseCase\Response\ClientInstallResponse;
-use App\Application\Gateway\BitrixRestGateway;
+use App\Application\Gateway\BitrixApi;
+use App\Domain\Entity\AccessToken;
 use App\Domain\Entity\Client;
 use App\Domain\Repository\ClientRepositoryInterface;
 
@@ -14,7 +15,7 @@ class ClientInstall
 {
 	public function __construct(
 		protected ClientRepositoryInterface $clientRepository,
-		protected BitrixRestGateway $gateway,
+		protected BitrixApi $clientGateway,
 	) {
 	}
 
@@ -35,25 +36,24 @@ class ClientInstall
 
 		$this->clientRepository->save($client);
 
-		return new ClientInstallResponse($client->getId());
-
 		$this->clientRepository->saveAccessToken(
 			$client->getId(),
-			$this->gateway->getAccessToken(
-				$request->memberId,
-				$request->domain,
-				$request->clientEndpoint,
-				$request->accessToken,
-				$request->expiresIn,
-				$request->applicationToken,
-				$request->refreshToken
-			)
+			$request->accessToken
 		);
 
+		$this->makeSomeAfterInstallation($request, $request->accessToken);
 
+		return new ClientInstallResponse($client->getId());
+	}
 
-		$this->gateway->call(
+	private function makeSomeAfterInstallation(ClientInstallRequest $request, AccessToken $accessToken): void
+	{
+		return;
+		//TODO make some client scenarios
+		//TODO Make some Vostrikovs scenario after installation
+		$this->clientGateway->call(
 			'event.bind',
+			$accessToken,
 			[
 				'EVENT' => 'ONCRMCONTACTUPDATE',
 				'HANDLER' => $request->handlerUrl,
@@ -61,14 +61,14 @@ class ClientInstall
 			]
 		);
 
-		$this->gateway->call(
+		$this->clientGateway->call(
 			'event.bind',
+			$accessToken,
 			[
 				'EVENT' => 'ONCRMCONTACTADD',
 				'HANDLER' => $request->handlerUrl,
 				'EVENT_TYPE' => 'online'
 			]
 		);
-
 	}
 }

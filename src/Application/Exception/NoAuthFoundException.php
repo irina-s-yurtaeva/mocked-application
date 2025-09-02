@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Exception;
+namespace App\Application\Exception;
 
 final class NoAuthFoundException extends BitrixApiException
 {

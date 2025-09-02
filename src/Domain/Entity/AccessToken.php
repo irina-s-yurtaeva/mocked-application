@@ -65,4 +65,19 @@ class AccessToken
 	{
 		return $this->id;
 	}
+
+	public function getClientId(): int
+	{
+		return $this->clientId;
+	}
+
+	public function getAccessToken(): string
+	{
+		return $this->accessToken;
+	}
+
+	public function getRefreshToken(): ?string
+	{
+		return $this->refreshToken;
+	}
 }

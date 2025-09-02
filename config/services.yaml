@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.templates_dir: '%kernel.project_dir%/templates'
+    env(C_REST_CLIENT_ID): ~
+    env(C_REST_CLIENT_SECRET): ~
+    env(OAUTH_SERVER_URL): ~
 
 services:
     # default configuration for services in *this* file
@@ -26,6 +29,32 @@ services:
 
     App\Domain\Repository\ClientRepositoryInterface:
         alias: App\Infrastructure\Repository\ClientRepository
+
+    App\Infrastructure\Gateway\Transport:
+        alias: App\Infrastructure\Gateway\TransportCurl
+
+    App\Infrastructure\Gateway\BitrixApi:
+        arguments:
+            $urlProvider: '@App\Application\Gateway\BitrixUrlProvider'
+            $accessTokenRefresher: '@App\Infrastructure\Gateway\AccessTokenRefresher'
+            $transport: '@App\Infrastructure\Gateway\TransportCurl'
+
+    App\Infrastructure\Gateway\AccessTokenRefresher:
+        arguments:
+            $clientId: '%env(C_REST_CLIENT_ID)%'
+            $clientSecret: '%env(C_REST_CLIENT_SECRET)%'
+#            $urlProvider: '@App\Application\Gateway\AuthUrlProvider'
+#            $clientRepository: '@App\Infrastructure\Repository\ClientRepository'
+#            $transport: '@App\Infrastructure\Gateway\TransportCurl'
+
+    App\Infrastructure\Gateway\TransportCurl:
+        arguments:
+            $disableSslVerification: true
+            $encoding: 'UTF-8'
+
+    App\Application\Gateway\AuthUrlProvider:
+        arguments:
+            $baseUrl: '%env(OAUTH_SERVER_URL)%'
 
     App\Infrastructure\Controller\ArgumentResolver\:
         resource: '%kernel.project_dir%/src/Infrastructure/Controller/ArgumentResolver'

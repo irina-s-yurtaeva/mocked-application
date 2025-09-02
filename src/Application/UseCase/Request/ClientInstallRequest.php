@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCase\Request;
 
+use App\Domain\Entity\AccessToken;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ClientInstallRequest
@@ -17,7 +18,10 @@ class ClientInstallRequest
 		public readonly string $domain,
 	    #[Assert\Length(max: 255)]
 		public readonly string $clientEndpoint,
+	    #[Assert\NotNull]
 		public readonly string $handlerUrl,
+	    #[Assert\NotNull]
+		public readonly AccessToken $accessToken,
 	)
 	{
 	}
