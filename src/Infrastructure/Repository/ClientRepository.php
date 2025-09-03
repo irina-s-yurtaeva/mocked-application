@@ -9,64 +9,48 @@ use App\Domain\Entity\AccessToken;
 use App\Domain\Repository\ClientRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 
 class ClientRepository extends ServiceEntityRepository implements ClientRepositoryInterface
 {
-	public function __construct(ManagerRegistry $registry)
+	public function __construct(
+		ManagerRegistry $registry,
+		protected LoggerInterface $logger
+	)
 	{
 		parent::__construct($registry, Client::class);
 	}
 
-	public function save(Client $client): void
+	public function save(Client $client): Client
 	{
-		$this->_em->persist($client);
-		$this->_em->flush();
-	}
+		$existing = $this->findOneByMemberId($client->getMemberId());
 
-	public function saveClient(
-		string $memberId,
-		string $domain,
-		string $clientEndPoint
-	): int {
-
-		if (!($client = $this->findOneByMemberId($memberId)))
+		if ($existing)
 		{
-			$client = new Client(
-				memberId: $memberId,
-				domain: $domain,
-				clientEndPoint: $clientEndPoint
-			);
+			$existing->setClientEndpoint($client->getClientEndpoint());
+			$existing->setInstallCount($existing->getInstallCount() + 1);
 		}
 		else
 		{
-			$client->setClientEndpoint($clientEndPoint);
-			$client->incrementInstallCount();
+			$this->getEntityManager()->persist($client);
 		}
 
-		$this->_em->persist($client);
-		$this->_em->flush();
+		$this->getEntityManager()->flush();
 
-		return $client->getId();
+		return $this->findOneByMemberId($client->getMemberId());
 	}
 
-	public function saveAccessToken(int $clientId, AccessToken $accessToken): int
+	public function saveClientAccessToken(Client $client, AccessToken $accessToken): void
 	{
-		/** @var Client|null $client */
-		$client = $this->find($clientId);
+		$accessToken->setClient($client);
+		$this->getEntityManager()->persist($accessToken);
+		$this->getEntityManager()->flush();
+	}
 
-		if (!$client) {
-			throw new \InvalidArgumentException('Client not found');
-		}
-
-		$client->setAccessToken($accessToken->getAccessToken());
-		$client->setExpiresIn($accessToken->getExpiresIn());
-		$client->setApplicationToken($accessToken->getApplicationToken());
-		$client->setRefreshToken($accessToken->getRefreshToken());
-
-		$this->_em->persist($client);
-		$this->_em->flush();
-
-		return $clientId;
+	public function saveAccessToken(AccessToken $accessToken): void
+	{
+		$this->getEntityManager()->persist($accessToken);
+		$this->getEntityManager()->flush();
 	}
 
 	/**

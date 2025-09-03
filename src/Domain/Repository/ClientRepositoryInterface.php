@@ -9,18 +9,13 @@ use App\Domain\Entity\Client;
 
 interface ClientRepositoryInterface
 {
-	public function saveClient(
-		string $memberId,
-		string $domain,
-		string $clientEndPoint,
-	): int;
+	public function save(Client $client): Client;
 
-	public function save(Client $client): void;
+	public function saveClientAccessToken(Client $client, AccessToken $accessToken): void;
 
 	public function saveAccessToken(
-		int $clintId,
 		AccessToken $accessToken
-	): int;
+	): void;
 
 	public function findAll(): array;
 

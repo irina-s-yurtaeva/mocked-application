@@ -8,6 +8,8 @@ parameters:
     env(C_REST_CLIENT_ID): ~
     env(C_REST_CLIENT_SECRET): ~
     env(OAUTH_SERVER_URL): ~
+    env(C_REST_CURRENT_ENCODING): ~
+    env(C_REST_IGNORE_SSL): ~
 
 services:
     # default configuration for services in *this* file
@@ -35,7 +37,7 @@ services:
 
     App\Infrastructure\Gateway\BitrixApi:
         arguments:
-            $urlProvider: '@App\Application\Gateway\BitrixUrlProvider'
+            $urlGenerator: '@App\Application\Gateway\BitrixUrlGenerator'
             $accessTokenRefresher: '@App\Infrastructure\Gateway\AccessTokenRefresher'
             $transport: '@App\Infrastructure\Gateway\TransportCurl'
 
@@ -49,8 +51,8 @@ services:
 
     App\Infrastructure\Gateway\TransportCurl:
         arguments:
-            $disableSslVerification: true
-            $encoding: 'UTF-8'
+            $disableSslVerification: '%env(C_REST_IGNORE_SSL)%'
+            $encoding: '%env(C_REST_CURRENT_ENCODING)%'
 
     App\Application\Gateway\AuthUrlProvider:
         arguments:

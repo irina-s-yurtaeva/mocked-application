@@ -10,49 +10,49 @@ use App\Application\Gateway\BitrixApi;
 use App\Domain\Entity\AccessToken;
 use App\Domain\Entity\Client;
 use App\Domain\Repository\ClientRepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 class ClientInstall
 {
 	public function __construct(
 		protected ClientRepositoryInterface $clientRepository,
 		protected BitrixApi $clientGateway,
+		protected LoggerInterface $logger,
 	) {
 	}
 
 	public function __invoke(ClientInstallRequest $request): ClientInstallResponse
 	{
-		$client = $this->clientRepository->findOneByMemberId($request->memberId);
-
-		if (!$client)
-		{
-			$client = new Client(
-				memberId: $request->memberId,
-				domain: $request->domain,
-				clientEndPoint: $request->clientEndpoint
-			);
-		}
-
+		$client = $request->client;
 		$client->incrementInstallCount();
 
-		$this->clientRepository->save($client);
+		$savedClient = $this->clientRepository->save($client);
 
-		$this->clientRepository->saveAccessToken(
-			$client->getId(),
+		$this->clientRepository->saveClientAccessToken(
+			$savedClient,
 			$request->accessToken
 		);
 
-		$this->makeSomeAfterInstallation($request, $request->accessToken);
+		$this->makeSomeAfterInstallation(
+			$request,
+			$savedClient,
+			$request->accessToken
+		);
 
-		return new ClientInstallResponse($client->getId());
+		return new ClientInstallResponse($savedClient->getId());
 	}
 
-	private function makeSomeAfterInstallation(ClientInstallRequest $request, AccessToken $accessToken): void
+	private function makeSomeAfterInstallation(
+		ClientInstallRequest $request,
+		Client $client,
+		AccessToken $accessToken): void
 	{
 		return;
 		//TODO make some client scenarios
 		//TODO Make some Vostrikovs scenario after installation
 		$this->clientGateway->call(
 			'event.bind',
+			$client,
 			$accessToken,
 			[
 				'EVENT' => 'ONCRMCONTACTUPDATE',
@@ -63,6 +63,7 @@ class ClientInstall
 
 		$this->clientGateway->call(
 			'event.bind',
+			$client,
 			$accessToken,
 			[
 				'EVENT' => 'ONCRMCONTACTADD',

@@ -14,6 +14,19 @@ use DateTimeImmutable;
 #[ORM\HasLifecycleCallbacks]
 class Client
 {
+	const INACTIVE = 'N';
+	const ACTIVE = 'Y';
+
+	const STATUS_FREE = 'F';
+	const STATUS_DEMO = 'D';
+	const STATUS_TRIAL = 'T';
+	const STATUS_PAID = 'P';
+	const STATUS_LOCAL = 'L';
+	const STATUS_SUBSCRIPTION = 'S';
+
+	const NOT_TRIALED = 'N';
+	const TRIALED = 'Y';
+
 	#[ORM\Id]
 	#[ORM\GeneratedValue]
 	#[ORM\Column(type: 'integer')]
@@ -22,11 +35,17 @@ class Client
 	#[ORM\Column(type: 'string', length: 255, unique: true, nullable: false)]
 	private string $memberId;
 
+	#[ORM\Column(type: 'string', length: 255, nullable: true)]
+	private ?string $applicationToken = null;
+
 	#[ORM\Column(type: 'string', length: 255, nullable: false)]
 	private string $domain;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
 	private ?string $clientEndpoint = null;
+
+	#[ORM\Column(type: 'string', length: 255, nullable: true)]
+	private ?string $scope = null;
 
 	#[ORM\Column(type: 'integer')]
 	private int $installCount = 0;
@@ -44,13 +63,18 @@ class Client
 	public function __construct(
 		string $memberId,
 		string $domain,
-		?string $clientEndpoint = null
+		?string $applicationToken = null,
+		?string $scope = null,
+		?string $clientEndpoint = null,
 	) {
 		$this->memberId = $memberId;
 		$this->domain = $domain;
+		$this->applicationToken = $applicationToken;
+		$this->scope = $scope;
 		$this->clientEndpoint = $clientEndpoint;
 		$this->accessTokens = new ArrayCollection();
 	}
+
 	#[ORM\PrePersist]
 	public function onPrePersist(): void
 	{
@@ -103,12 +127,28 @@ class Client
 	public function incrementInstallCount(): self
 	{
 		$this->installCount++;
+
+		return $this;
+	}
+
+	public function setId(int $id): self
+	{
+		$this->id = $id;
+
+		return $this;
+	}
+
+	public function setInstallCount(int $installCount): self
+	{
+		$this->installCount = $installCount;
+
 		return $this;
 	}
 
 	public function setClientEndpoint(?string $clientEndpoint): self
 	{
 		$this->clientEndpoint = $clientEndpoint;
+
 		return $this;
 	}
 }

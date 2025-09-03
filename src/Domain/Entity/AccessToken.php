@@ -26,10 +26,10 @@ class AccessToken
 	private \DateTimeImmutable $expiresIn;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
-	private ?string $applicationToken = null;
+	private ?string $refreshToken = null;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
-	private ?string $refreshToken = null;
+	private ?string $serverEndPoint = null;
 
 	#[ORM\Column(type: 'integer', nullable: true)]
 	private ?int $userId = null;
@@ -46,8 +46,8 @@ class AccessToken
 		int $clientId,
 		string $accessToken,
 		\DateTimeImmutable $expiresIn,
-		?string $applicationToken,
 		?string $refreshToken,
+		?string $serverEndPoint,
 		?int $userId,
 		?string $userFullName
 	) {
@@ -55,8 +55,8 @@ class AccessToken
 		$this->clientId = $clientId;
 		$this->accessToken = $accessToken;
 		$this->expiresIn = $expiresIn;
-		$this->applicationToken = $applicationToken;
 		$this->refreshToken = $refreshToken;
+		$this->serverEndPoint = $serverEndPoint;
 		$this->userId = $userId;
 		$this->userFullName = $userFullName;
 	}
@@ -79,5 +79,16 @@ class AccessToken
 	public function getRefreshToken(): ?string
 	{
 		return $this->refreshToken;
+	}
+
+	public function getClient(): Client
+	{
+		return $this->client;
+	}
+
+	public function setClient(Client $client): self
+	{
+		$this->client = $client;
+		return $this;
 	}
 }

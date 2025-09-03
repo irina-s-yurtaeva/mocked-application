@@ -44,6 +44,7 @@ class Controller extends AbstractController
 		}
 		catch (\Exception $exception)
 		{
+			$this->logger->error('Ошибка установки приложения', ['exception' => $exception]);
 			if ($this->manager->isHTMLAnswer())
 			{
 				$content = $this->renderer->render('client/install_failed.php', []);

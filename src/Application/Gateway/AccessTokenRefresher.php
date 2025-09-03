@@ -34,8 +34,8 @@ abstract class AccessTokenRefresher implements AccessTokenRefresherInterface
 			clientId: 0,
 			accessToken: $result['accessToken'],
 			expiresIn: (new \DateTimeImmutable())->setTimestamp((int)$result['expiresIn']),
-			applicationToken: $result['applicationToken'],
 			refreshToken: $result['refreshToken'],
+			serverEndPoint: $result['serverEndPoint'] ?? null,
 			userId: $result['userId'],
 			userFullName: $result['userFullName'],
 		);

@@ -15,6 +15,7 @@ use App\Application\Exception\MethodNotFoundException;
 use App\Application\Exception\NoAuthFoundException;
 use App\Application\Exception\QueryLimitExceededException;
 use App\Domain\Entity\AccessToken;
+use App\Domain\Entity\Client;
 
 abstract class BitrixApi implements BitrixApiInterface
 {
@@ -22,16 +23,24 @@ abstract class BitrixApi implements BitrixApiInterface
 	protected int $attemptsToAuth = 0;
 
 	public function __construct(
-		private readonly BitrixUrlProvider $urlProvider,
+		private readonly BitrixUrlGenerator $urlGenerator,
 		private readonly AccessTokenRefresher $accessTokenRefresher,
 	) {
 	}
 
-	public function call(string $method, AccessToken $accessToken, array $params = []): array
+	public function call(
+		string $method,
+		Client $client,
+		AccessToken $accessToken,
+		array $params = []
+	): array
 	{
 		try
 		{
-			$url = $this->urlProvider->getEndpointUrlWithMethod($method);
+			$url = $this->urlGenerator->getEndpointUrlWithMethod(
+				$client->getClientEndpoint(),
+				$method
+			);
 			$params['auth'] = $accessToken->getAccessToken();
 
 			$data = $this->processRequest($url, $params);
@@ -60,7 +69,7 @@ abstract class BitrixApi implements BitrixApiInterface
 				$this->attemptsToAuth++;
 				$newAccessToken = $this->accessTokenRefresher->refresh($accessToken);
 
-				return $this->call($method, $newAccessToken, $params);
+				return $this->call($method, $client, $newAccessToken, $params);
 			}
 
 			throw $e;
