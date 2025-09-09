@@ -44,7 +44,7 @@ class Controller extends AbstractController
 		}
 	}
 
-	#[Route('/v1/handler/', 'client_fulfill', methods: ['GET'])]
+	#[Route('/v1/handler/', 'client_fulfill_to_read', methods: ['GET'])]
 	public function handleGet(): JsonResponse
 	{
 		return new JsonResponse(['status' => 'ok']);

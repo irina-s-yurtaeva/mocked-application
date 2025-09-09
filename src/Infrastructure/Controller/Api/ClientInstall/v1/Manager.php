@@ -7,13 +7,12 @@ namespace App\Infrastructure\Controller\Api\ClientInstall\v1;
 use App\Application\Exception\BitrixApiException;
 use App\Application\Gateway\BitrixApiInterface;
 use App\Application\UseCase\ClientInstall;
-use App\Domain\Entity\AccessToken;
-use App\Domain\Entity\Client;
+use App\Infrastructure\Controller\Api\BaseManager;
 use App\Infrastructure\Repository\ClientRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class Manager
+class Manager extends BaseManager
 {
 	private const INSTALL_AS_A_PLACEMENT = 'placement';
 	private const INSTALL_AS_AN_APPLICATION = 'application';
@@ -67,48 +66,18 @@ class Manager
 	private function formRequestForAnApp(Request $request): ClientInstall\Request
 	{
 		return new ClientInstall\Request(
-			new Client(
-				memberId: $request->get('auth')['member_id'],
-				domain: $request->get('auth')['domain'],
-				applicationToken: $request->get('auth')['application_token'],
-				scope: $request->get('auth')['scope'] ?? null,
-				clientEndpoint: $request->get('auth')['client_endpoint'],
-			),
+			$this->retrieveClient($request),
 			handlerUrl: $request->getRequestUri(),
-			accessToken: new AccessToken(
-				id: 0,
-				clientId: 0,
-				accessToken: $request->get('auth')['access_token'],
-				expiresIn: (new \DateTimeImmutable())->setTimestamp((int)$request->get('auth')['expires']),
-				refreshToken: $request->get('auth')['refresh_token'],
-				serverEndPoint: $request->get('auth')['server_endpoint'] ?? null,
-				userId: (int) $request->get('auth')['user_id'] ?? null,
-				userFullName: $request->get('auth')['user_full_name'] ?? null,
-			)
+			accessToken: $this->retrieveAccessToken($request),
 		);
 	}
 
 	private function formRequestForAPlacement(Request $request): ClientInstall\Request
 	{
 		return new ClientInstall\Request(
-			new Client(
-				memberId: $request->get('member_id'),
-				domain: ($request->get('DOMAIN')),
-				applicationToken: null,
-				scope: null,
-				clientEndpoint: 'https://' . $request->get('DOMAIN') . '/rest/',
-			),
+			$this->retrieveClient($request),
 			handlerUrl: $request->getRequestUri(),
-			accessToken: new AccessToken(
-				id: 0,
-				clientId: 0,
-				accessToken: ($request->get('AUTH_ID')),
-				expiresIn: (new \DateTimeImmutable())->setTimestamp((int)$request->get('AUTH_EXPIRES')),
-				refreshToken: ($request->get('REFRESH_ID')),
-				serverEndPoint: null,
-				userId: null,
-				userFullName: null,
-			)
+			accessToken: $this->retrieveAccessToken($request)
 		);
 	}
 }

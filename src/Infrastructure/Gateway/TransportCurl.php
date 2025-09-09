@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Infrastructure\Gateway;
 
 use App\Application\Exception\CurlTransportException;
+use Psr\Log\LoggerInterface;
 
 class TransportCurl implements Transport
 {
 	public function __construct(
 		protected bool $disableSslVerification = false,
 		protected string $encoding = 'UTF-8',
+		protected LoggerInterface $logger,
 	) {
 	}
 
@@ -51,7 +53,7 @@ class TransportCurl implements Transport
 
 	protected function encode(array $data, string $from, string $into): array
 	{
-		if ($from === $into)
+		if (mb_strtolower($from) === mb_strtolower($into))
 		{
 			return $data;
 		}
@@ -60,7 +62,18 @@ class TransportCurl implements Transport
 		foreach ($data as $k => $item)
 		{
 			$k = iconv($from, $into, $k);
-			$result[$k] = is_array($item) ? $this->encode($item, $from, $into) : iconv($from, $into, $item);
+			if (is_string($item))
+			{
+				$result[$k] = mb_convert_encoding($item, 'UTF-8', $into);
+			}
+			else if (is_array($item))
+			{
+				$result[$k] = $this->encode($item, $from, $into);
+			}
+			else
+			{
+				$result[$k] = $item;
+			}
 		}
 
 		return $result;
