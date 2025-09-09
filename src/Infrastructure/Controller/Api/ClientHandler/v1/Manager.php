@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Controller\Api\ClientInstall\v1;
+namespace App\Infrastructure\Controller\Api\ClientHandler\v1;
 
 use App\Application\Exception\BitrixApiException;
 use App\Application\Gateway\BitrixApiInterface;
-use App\Application\UseCase\ClientInstall;
+use App\Application\UseCase\ClientFulfill;
 use App\Domain\Entity\AccessToken;
 use App\Domain\Entity\Client;
 use App\Infrastructure\Repository\ClientRepository;
@@ -15,38 +15,24 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Manager
 {
-	private const INSTALL_AS_A_PLACEMENT = 'placement';
-	private const INSTALL_AS_AN_APPLICATION = 'application';
-
-	private ?string $installType = null;
-
 	public function __construct(
 		protected ClientRepository $repo,
 		protected BitrixApiInterface $bitrixApi,
-		protected ClientInstall\DevCaseRunner $devCaseRunner,
+		protected ClientFulfill\DevCaseRunner $devCaseRunner,
 		protected LoggerInterface $logger,
 	)
 	{
 
 	}
 
-	public function isHTMLAnswer(): bool
+	public function handle(Request $request): void
 	{
-		return $this->installType === self::INSTALL_AS_A_PLACEMENT;
-	}
-
-	public function install(Request $request): void
-	{
-		$this->installType = null;
-
-		if ($request->get('event') === 'ONAPPINSTALL' && !empty($request->get('auth')))
+		if (!empty($request->get('auth')))
 		{
-			$this->installType = self::INSTALL_AS_AN_APPLICATION;
 			$useCaseRequest = $this->formRequestForAnApp($request);
 		}
-		else if ($request->get('PLACEMENT') === 'DEFAULT')
+		else if ($request->get('DOMAIN'))
 		{
-			$this->installType = self::INSTALL_AS_A_PLACEMENT;
 			$useCaseRequest = $this->formRequestForAPlacement($request);
 		}
 		else
@@ -56,7 +42,7 @@ class Manager
 			);
 		}
 
-		(new ClientInstall\Handler(
+		(new ClientFulfill\Handler(
 			$this->repo,
 			$this->bitrixApi,
 			$this->devCaseRunner,
@@ -64,9 +50,9 @@ class Manager
 		))($useCaseRequest);
 	}
 
-	private function formRequestForAnApp(Request $request): ClientInstall\Request
+	private function formRequestForAnApp(Request $request): ClientFulfill\Request
 	{
-		return new ClientInstall\Request(
+		return new ClientFulfill\Request(
 			new Client(
 				memberId: $request->get('auth')['member_id'],
 				domain: $request->get('auth')['domain'],
@@ -74,7 +60,6 @@ class Manager
 				scope: $request->get('auth')['scope'] ?? null,
 				clientEndpoint: $request->get('auth')['client_endpoint'],
 			),
-			handlerUrl: $request->getRequestUri(),
 			accessToken: new AccessToken(
 				id: 0,
 				clientId: 0,
@@ -88,9 +73,9 @@ class Manager
 		);
 	}
 
-	private function formRequestForAPlacement(Request $request): ClientInstall\Request
+	private function formRequestForAPlacement(Request $request): ClientFulfill\Request
 	{
-		return new ClientInstall\Request(
+		return new ClientFulfill\Request(
 			new Client(
 				memberId: $request->get('member_id'),
 				domain: ($request->get('DOMAIN')),
@@ -98,7 +83,6 @@ class Manager
 				scope: null,
 				clientEndpoint: 'https://' . $request->get('DOMAIN') . '/rest/',
 			),
-			handlerUrl: $request->getRequestUri(),
 			accessToken: new AccessToken(
 				id: 0,
 				clientId: 0,

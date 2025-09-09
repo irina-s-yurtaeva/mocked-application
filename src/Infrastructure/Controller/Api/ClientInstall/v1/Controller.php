@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller\Api\ClientInstall\v1;
 
-use App\Application\UseCase\ClientInstall;
-use App\Application\UseCase\Request\ClientInstallRequest;
 use App\Infrastructure\Presentation\TemplateRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,8 +18,8 @@ class Controller extends AbstractController
 {
 	public function __construct(
 		private Manager $manager,
+		private TemplateRenderer $renderer,
 		private readonly LoggerInterface $logger,
-		private TemplateRenderer $renderer
 	) {
 	}
 

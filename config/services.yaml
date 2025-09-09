@@ -10,6 +10,9 @@ parameters:
     env(OAUTH_SERVER_URL): ~
     env(C_REST_CURRENT_ENCODING): ~
     env(C_REST_IGNORE_SSL): ~
+    env(DEV_CASE_INSTALL): ~
+    env(DEV_CASE_FULFILL): ~
+
 
 services:
     # default configuration for services in *this* file
@@ -31,6 +34,9 @@ services:
 
     App\Domain\Repository\ClientRepositoryInterface:
         alias: App\Infrastructure\Repository\ClientRepository
+
+    App\Application\Gateway\BitrixApi:
+        alias: App\Infrastructure\Gateway\BitrixApi
 
     App\Infrastructure\Gateway\Transport:
         alias: App\Infrastructure\Gateway\TransportCurl
@@ -64,6 +70,25 @@ services:
             $serializer: '@serializer'
             $validator: '@validator'
         tags: ['controller.argument_value_resolver']
+
+    App\Application\UseCase\ClientInstall\DevCase\:
+        resource: '../src/Application/UseCase/ClientInstall/DevCase/*'
+        tags: ['app.dev_case_install']
+
+    App\Application\UseCase\ClientInstall\DevCaseRunner:
+        arguments:
+            $devCases: !tagged app.dev_case_install
+            $enabledCases: '%env(json:DEV_CASE_INSTALL)%'
+
+
+    App\Application\UseCase\ClientFulfill\DevCase\:
+        resource: '../src/Application/UseCase/ClientFulfill/DevCase/*'
+        tags: ['app.dev_case_fulfill']
+
+    App\Application\UseCase\ClientFulfill\DevCaseRunner:
+        arguments:
+            $devCases: !tagged app.dev_case_fulfill
+            $enabledCases: '%env(json:DEV_CASE_FULFILL)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
