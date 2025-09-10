@@ -38,6 +38,8 @@ class Manager extends BaseManager
 	{
 		$this->installType = null;
 
+		$this->logger->info('Install request', ['request' => $request->request->all()]);
+
 		if ($request->get('event') === 'ONAPPINSTALL' && !empty($request->get('auth')))
 		{
 			$this->installType = self::INSTALL_AS_AN_APPLICATION;
@@ -67,7 +69,7 @@ class Manager extends BaseManager
 	{
 		return new ClientInstall\Request(
 			$this->retrieveClient($request),
-			handlerUrl: $request->getRequestUri(),
+			handlerUrl: $request->getSchemeAndHttpHost() . '/v1/eventhandler/',
 			accessToken: $this->retrieveAccessToken($request),
 		);
 	}
@@ -76,7 +78,7 @@ class Manager extends BaseManager
 	{
 		return new ClientInstall\Request(
 			$this->retrieveClient($request),
-			handlerUrl: $request->getRequestUri(),
+			handlerUrl: $request->getSchemeAndHttpHost() . '/v1/eventhandler/',
 			accessToken: $this->retrieveAccessToken($request)
 		);
 	}

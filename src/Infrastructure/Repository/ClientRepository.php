@@ -23,21 +23,10 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 
 	public function save(Client $client): Client
 	{
-		$existing = $this->findOneByMemberId($client->getMemberId());
-
-		if ($existing)
-		{
-			$existing->setClientEndpoint($client->getClientEndpoint());
-			$existing->setInstallCount($existing->getInstallCount() + 1);
-		}
-		else
-		{
-			$this->getEntityManager()->persist($client);
-		}
-
+		$this->getEntityManager()->persist($client);
 		$this->getEntityManager()->flush();
 
-		return $this->findOneByMemberId($client->getMemberId());
+		return $this->findOneByApplicationToken($client->getApplicationToken());
 	}
 
 	public function saveClientAccessToken(Client $client, AccessToken $accessToken): void
@@ -69,6 +58,15 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 		return $this->createQueryBuilder('c')
 			->where('c.memberId = :memberId')
 			->setParameter('memberId', $memberId)
+			->getQuery()
+			->getOneOrNullResult();
+	}
+
+	public function findOneByApplicationToken(string $applicationToken): ?Client
+	{
+		return $this->createQueryBuilder('c')
+			->where('c.applicationToken = :applicationToken')
+			->setParameter('applicationToken', $applicationToken)
 			->getQuery()
 			->getOneOrNullResult();
 	}

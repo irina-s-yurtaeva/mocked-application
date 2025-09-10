@@ -22,8 +22,15 @@ class Handler
 
 	public function __invoke(Request $request): Response
 	{
-		$client = $request->client;
-		$client->incrementInstallCount();
+		$client = $this->clientRepository->findOneByApplicationToken($request->client->getApplicationToken())
+			?? $this->clientRepository->findOneByMemberId($request->client->getMemberId())
+			?? $request->client
+		;
+		$client
+			->setApplicationToken($request->client->getApplicationToken())
+			->incrementInstallCount()
+			->setClientEndpoint($request->client->getClientEndpoint())
+		;
 
 		$savedClient = $this->clientRepository->save($client);
 

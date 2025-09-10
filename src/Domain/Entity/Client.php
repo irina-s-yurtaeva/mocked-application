@@ -14,18 +14,12 @@ use DateTimeImmutable;
 #[ORM\HasLifecycleCallbacks]
 class Client
 {
-	const INACTIVE = 'N';
-	const ACTIVE = 'Y';
-
-	const STATUS_FREE = 'F';
-	const STATUS_DEMO = 'D';
-	const STATUS_TRIAL = 'T';
-	const STATUS_PAID = 'P';
-	const STATUS_LOCAL = 'L';
-	const STATUS_SUBSCRIPTION = 'S';
-
-	const NOT_TRIALED = 'N';
-	const TRIALED = 'Y';
+	private const STATUS_FREE = 'F'; // moved from oauth to know about statuses
+	private const STATUS_DEMO = 'D'; // moved from oauth to know about statuses
+	private const STATUS_TRIAL = 'T'; // moved from oauth to know about statuses
+	private const STATUS_PAID = 'P'; // moved from oauth to know about statuses
+	private const STATUS_LOCAL = 'L'; // moved from oauth to know about statuses
+	private const STATUS_SUBSCRIPTION = 'S'; // moved from oauth to know about statuses
 
 	#[ORM\Id]
 	#[ORM\GeneratedValue]
@@ -36,7 +30,7 @@ class Client
 	private string $memberId;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
-	private ?string $applicationToken = null;
+	private ?string $applicationToken;
 
 	#[ORM\Column(type: 'string', length: 255, nullable: false)]
 	private string $domain;
@@ -49,6 +43,9 @@ class Client
 
 	#[ORM\Column(type: 'integer')]
 	private int $installCount = 0;
+
+	#[ORM\Column(type: 'integer')]
+	private int $handleCount = 0;
 
 	#[ORM\Column(type: 'datetime_immutable')]
 	private DateTimeImmutable $createdAt;
@@ -63,7 +60,7 @@ class Client
 	public function __construct(
 		string $memberId,
 		string $domain,
-		?string $applicationToken = null,
+		?string $applicationToken,
 		?string $scope = null,
 		?string $clientEndpoint = null,
 	) {
@@ -104,6 +101,11 @@ class Client
 		return $this->domain;
 	}
 
+	public function getApplicationToken(): string
+	{
+		return $this->applicationToken;
+	}
+
 	public function getClientEndpoint(): ?string
 	{
 		return $this->clientEndpoint;
@@ -127,23 +129,25 @@ class Client
 	public function incrementInstallCount(): self
 	{
 		$this->installCount++;
+		$this->handleCount = 0;
 
 		return $this;
 	}
 
-	public function setId(int $id): self
+	public function incrementHandleCount(): self
 	{
-		$this->id = $id;
+		$this->handleCount++;
 
 		return $this;
 	}
 
-	public function setInstallCount(int $installCount): self
+	public function setApplicationToken(string $applicationToken): self
 	{
-		$this->installCount = $installCount;
+		$this->applicationToken = $applicationToken;
 
 		return $this;
 	}
+
 
 	public function setClientEndpoint(?string $clientEndpoint): self
 	{

@@ -9,7 +9,7 @@ use App\Application\UseCase\ClientFulfill\Request;
 use App\Domain\Entity\AccessToken;
 use App\Domain\Entity\Client;
 
-class AskProfileDevCase implements DevCaseInterface
+class JustADevCase implements DevCaseInterface
 {
 	private mixed $result;
 

@@ -20,4 +20,6 @@ interface ClientRepositoryInterface
 	public function findAll(): array;
 
 	public function findOneByMemberId(string $memberId): ?Client;
+
+	public function findOneByApplicationToken(string $applicationToken): ?Client;
 }

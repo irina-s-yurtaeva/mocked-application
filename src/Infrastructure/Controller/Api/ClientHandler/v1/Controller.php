@@ -28,8 +28,6 @@ class Controller extends AbstractController
 	{
 		try
 		{
-			$this->logger->info('Handle request', ['request' => $request->request->all()]);
-
 			$this->manager->handle($request);
 
 			$content = $this->renderer->render('client/handle_succeeded.php', []);

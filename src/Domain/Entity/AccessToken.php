@@ -37,6 +37,9 @@ class AccessToken
 	#[ORM\Column(type: 'string', length: 255, nullable: true)]
 	private ?string $userFullName = null;
 
+	#[ORM\Column(type: 'boolean', nullable: false)]
+	private bool $isAdmin = false;
+
 	#[ORM\ManyToOne(targetEntity: Client::class, fetch: 'LAZY', inversedBy: 'accessTokens')]
 	#[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id', nullable: false)]
 	private ?Client $client = null;
@@ -89,6 +92,19 @@ class AccessToken
 	public function setClient(Client $client): self
 	{
 		$this->client = $client;
+
+		return $this;
+	}
+
+	public function setUserData(int $userId, string $userFullName, ?bool $isAdmin = null): self
+	{
+		$this->userId = $userId;
+		$this->userFullName = $userFullName;
+		if (is_bool($isAdmin))
+		{
+			$this->isAdmin = $isAdmin;
+		}
+
 		return $this;
 	}
 }

@@ -28,7 +28,6 @@ class Controller extends AbstractController
 	{
 		try
 		{
-			$this->logger->info('Install request', ['request' => $request->request->all()]);
 			$this->manager->install($request);
 
 			if ($this->manager->isHTMLAnswer())

@@ -25,6 +25,8 @@ class Manager extends BaseManager
 
 	public function handle(Request $request): void
 	{
+		$this->logger->info('Handle request', ['request' => $request->request->all()]);
+
 		(new ClientFulfill\Handler(
 			$this->repo,
 			$this->bitrixApi,

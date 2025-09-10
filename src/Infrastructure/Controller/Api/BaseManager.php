@@ -60,11 +60,12 @@ class BaseManager
 				accessToken: ($request->get('AUTH_ID')),
 				expiresIn: (new \DateTimeImmutable())->setTimestamp(time() + (int)$request->get('AUTH_EXPIRES')),
 				refreshToken: ($request->get('REFRESH_ID')),
-				serverEndPoint: null,
+				serverEndPoint: $request->get('SERVER_ENDPOINT') ?? null,
 				userId: null,
 				userFullName: null,
 			);
 		}
+
 		throw new BitrixApiException('Invalid request parameters for the access token.');
 	}
 }
