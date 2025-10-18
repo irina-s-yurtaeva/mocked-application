@@ -29,20 +29,15 @@ abstract class AccessTokenRefresher implements AccessTokenRefresherInterface
 			]
 		);
 
-		$newAccessToken = new AccessToken(
-			id: 0,
-			clientId: 0,
-			accessToken: $result['accessToken'],
-			expiresIn: (new \DateTimeImmutable())->setTimestamp((int)$result['expiresIn']),
-			refreshToken: $result['refreshToken'],
-			serverEndPoint: $result['serverEndPoint'] ?? null,
-			userId: $result['userId'],
-			userFullName: $result['userFullName'],
-		);
+		$token
+			->setAccessToken($result['access_token'])
+			->setRefreshToken($result['refresh_token'])
+			->setExpiresIn((new \DateTimeImmutable())->setTimestamp((int)$result['expires']));
+		;
 
-		$this->clientRepository->saveAccessToken($token->getClientId(), $newAccessToken);
+		$this->clientRepository->saveAccessToken($token);
 
-		return $newAccessToken;
+		return $token;
 	}
 
 	abstract protected function processRequest($url, array $params): array;

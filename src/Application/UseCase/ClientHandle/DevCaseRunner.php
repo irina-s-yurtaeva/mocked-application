@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCase\ClientInstall;
+namespace App\Application\UseCase\ClientHandle;
 
 use App\Domain\Entity\AccessToken;
 use App\Domain\Entity\Client;
-use App\Application\UseCase\ClientInstall\DevCase;
 
 class DevCaseRunner
 {
+	private array $results = [];
 	/**
 	 * @param DevCase\DevCaseInterface[] $devCases
 	 */
@@ -25,14 +25,21 @@ class DevCaseRunner
 		AccessToken $accessToken
 	): void
 	{
+
 		foreach ($this->devCases as $case) {
 			$caseName = (new \ReflectionClass($case))->getShortName();
 
 			if (!in_array($caseName, $this->enabledCaseNames, true)) {
 				continue;
 			}
-
 			$case->handle($request, $client, $accessToken);
+
+			$this->results[$caseName] = $case->getResult();
 		}
+	}
+
+	public function getResults(): array
+	{
+		return $this->results;
 	}
 }

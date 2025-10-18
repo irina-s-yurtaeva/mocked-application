@@ -117,18 +117,24 @@
 			<tr>
 				<th>ID</th>
 				<th>Название</th>
-				<th>Адрес</th>
+				<th>Точка входа</th>
+				<th></th>
 			</tr>
 			</thead>
 			<tbody>
-			<?php foreach ($portals as $portal): ?>
+			<?php foreach ($portals as $portal):
+				/** @var \App\Domain\Entity\Client $portal */
+				?>
 				<tr>
 					<td><?= htmlspecialchars($portal->getId()) ?></td>
-					<td><?= htmlspecialchars($portal->getName()) ?></td>
+					<td><?= htmlspecialchars($portal->getDomain()) ?></td>
 					<td>
-						<a href="<?= htmlspecialchars($portal->getUrl()) ?>" target="_blank" rel="noopener">
-							<?= htmlspecialchars($portal->getUrl()) ?>
+						<a href="<?= htmlspecialchars($portal->getClientEndpoint()) ?>" target="_blank" rel="noopener">
+							<?= htmlspecialchars($portal->getClientEndpoint()) ?>
 						</a>
+					</td>
+					<td>
+						<a href="<?=$portal->urlPath?>">Действия</a>
 					</td>
 				</tr>
 			<?php endforeach; ?>

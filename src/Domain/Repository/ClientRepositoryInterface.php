@@ -22,4 +22,6 @@ interface ClientRepositoryInterface
 	public function findOneByMemberId(string $memberId): ?Client;
 
 	public function findOneByApplicationToken(string $applicationToken): ?Client;
+
+	public function findLastAdminAccessTokenByMemberId(string $memberId): ?AccessToken;
 }

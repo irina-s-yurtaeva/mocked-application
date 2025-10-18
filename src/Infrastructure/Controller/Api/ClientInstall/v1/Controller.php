@@ -23,6 +23,12 @@ class Controller extends AbstractController
 	) {
 	}
 
+	#[Route('/v1/install/', 'client_install_get', methods: ['GET', 'HEAD'])]
+	public function installGet(Request $request): Response
+	{
+		return new JsonResponse(['status' => 'success', 'message' => 'Hey, you!'], 200);
+	}
+
 	#[Route('/v1/install/', 'client_install', methods: ['POST'])]
 	public function install(Request $request): Response
 	{
@@ -53,7 +59,7 @@ class Controller extends AbstractController
 		}
 	}
 
-	#[Route('/v1/install/test/', 'client_install_test', methods: ['GET'])]
+	#[Route('/v1/install/test/', 'client_install_test', methods: ['GET', 'POST', 'HEAD'])]
 	public function installTest(): JsonResponse
 	{
 		return new JsonResponse(['status' => 'ok']);

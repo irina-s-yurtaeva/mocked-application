@@ -12,7 +12,7 @@ class TransportCurl implements Transport
 	public function __construct(
 		protected bool $disableSslVerification = false,
 		protected string $encoding = 'UTF-8',
-		protected LoggerInterface $logger,
+		protected ?LoggerInterface $logger = null,
 	) {
 	}
 
@@ -43,12 +43,14 @@ class TransportCurl implements Transport
 
 		curl_close($ch);
 
-		return $this->processResponse($result);
+		$result = $this->processResponse($result);
+
+		return $result;
 	}
 
 	public function processResponse(string $data): array
 	{
-		return $this->encode(json_decode($data, true), 'UTF-8', $this->encoding);
+		return $this->encode(json_decode($data, true) ?? [], 'UTF-8', $this->encoding);
 	}
 
 	protected function encode(array $data, string $from, string $into): array

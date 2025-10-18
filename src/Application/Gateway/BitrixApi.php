@@ -75,7 +75,8 @@ abstract class BitrixApi implements BitrixApiInterface
 			throw $e;
 		}
 
-		return $data['result'] ?? $data;
+		$res = $data['result'] ?? $data;
+		return is_array($res) ? $res : [];
 	}
 
 	abstract protected function processRequest(string $url, array $params): array;

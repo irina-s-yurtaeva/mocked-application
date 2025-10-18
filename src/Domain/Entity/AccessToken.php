@@ -84,9 +84,34 @@ class AccessToken
 		return $this->refreshToken;
 	}
 
+	public function getExpiresIn(): \DateTimeImmutable
+	{
+		return $this->expiresIn;
+	}
+
+	public function getServerEndPoint(): ?string
+	{
+		return $this->serverEndPoint;
+	}
+
+	public function getFullName(): ?string
+	{
+		return $this->userFullName;
+	}
+
 	public function getClient(): Client
 	{
 		return $this->client;
+	}
+
+	public function getUserId(): ?int
+	{
+		return $this->userId;
+	}
+
+	public function isAdmin(): bool
+	{
+		return $this->isAdmin;
 	}
 
 	public function setClient(Client $client): self
@@ -96,10 +121,41 @@ class AccessToken
 		return $this;
 	}
 
-	public function setUserData(int $userId, string $userFullName, ?bool $isAdmin = null): self
+	public function setAccessToken(string $token): self
+	{
+		$this->accessToken = $token;
+
+		return $this;
+	}
+
+	public function setRefreshToken(string $token): self
+	{
+		$this->refreshToken = $token;
+
+		return $this;
+	}
+
+	public function setExpiresIn(\DateTimeImmutable $time): self
+	{
+		$this->expiresIn = $time;
+
+		return $this;
+	}
+
+	public function setServerEndPoint(string $serverEndPoint): self
+	{
+		$this->serverEndPoint = $serverEndPoint;
+
+		return $this;
+	}
+
+	public function setUserData(int $userId, ?string $userFullName = null, ?bool $isAdmin = null): self
 	{
 		$this->userId = $userId;
-		$this->userFullName = $userFullName;
+		if (is_string($userFullName))
+		{
+			$this->userFullName = $userFullName;
+		}
 		if (is_bool($isAdmin))
 		{
 			$this->isAdmin = $isAdmin;

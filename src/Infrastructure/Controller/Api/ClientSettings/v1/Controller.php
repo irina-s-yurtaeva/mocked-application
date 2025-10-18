@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Controller\Api\ClientHandler\v1;
+namespace App\Infrastructure\Controller\Api\ClientSettings\v1;
 
-use App\Infrastructure\Presentation\TemplateRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,39 +17,34 @@ class Controller extends AbstractController
 {
 	public function __construct(
 		private Manager $manager,
-		private TemplateRenderer $renderer,
 		private readonly LoggerInterface $logger,
 	) {
 	}
 
-	#[Route('/v1/handler/', 'client_fulfill_get', methods: ['GET', 'HEAD'])]
-	public function handleTest(Request $request): Response
+	#[Route('/v1/settings/', 'client_settings_get', methods: ['GET', 'HEAD'])]
+	public function settingsGet(Request $request): Response
 	{
 		return new JsonResponse(['status' => 'success', 'message' => 'Hey, you!'], 200);
 	}
 
-	#[Route('/v1/handler/', 'client_fulfill', methods: ['POST'])]
+	#[Route('/v1/settings/', 'client_settings', methods: ['POST'])]
 	public function handle(Request $request): Response
 	{
 		try
 		{
-			$this->manager->handle($request);
-
-			$content = $this->renderer->render('client/handle_succeeded.php', []);
-
-			return new Response($content, 200, ['Content-Type' => 'text/html']);
+			return new JsonResponse($this->manager->handleGet($request), 200);
 		}
 		catch (\Exception $exception)
 		{
-			$this->logger->error('Ошибка отрисовки приложения', ['exception' => $exception]);
+			$this->logger->error('Ошибка получения настроек приложения', ['exception' => $exception]);
 
 			return new JsonResponse(['status' => 'error', 'message' => $exception->getMessage()], 400);
 		}
 	}
 
-	#[Route('/v1/handler/', 'client_fulfill_to_read', methods: ['GET'])]
-	public function handleGet(): JsonResponse
+	#[Route('/v1/settings/set/', 'client_settings_set', methods: ['POST'])]
+	public function setSettings(Request $request): Response
 	{
-		return new JsonResponse(['status' => 'ok']);
+		return new JsonResponse($this->manager->handleSet($request), 200);
 	}
 }
